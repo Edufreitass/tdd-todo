@@ -9,7 +9,7 @@ import com.example.todo.repository.ToDoRepository;
 
 @Service
 public class ToDoService {
-
+	
 	private ToDoRepository toDoRepository;
 
 	public ToDoService(ToDoRepository toDoRepository) {
@@ -20,4 +20,7 @@ public class ToDoService {
 		return toDoRepository.findAll();
 	}
 
+	public ToDo save(ToDo toDo) {
+		return toDoRepository.save(toDo);
+	}
 }

@@ -1,14 +1,13 @@
 package com.example.todo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.example.todo.model.ToDo;
 import com.example.todo.repository.ToDoRepository;
@@ -36,53 +35,68 @@ class ToDoServiceTest {
 
 	/* Repository with @MockBean */
 
-	@MockBean
-	private ToDoRepository toDoRepository;
-
-	@Test
-	void getAllToDos() {
-		List<ToDo> toDoList = new ArrayList<ToDo>();
-		toDoList.add(new ToDo(1L, "Todo Sample 1", true));
-		toDoList.add(new ToDo(2L, "Todo Sample 2", true));
-		toDoList.add(new ToDo(3L, "Todo Sample 3", false));
-		when(toDoRepository.findAll()).thenReturn(toDoList);
-		ToDoService toDoService = new ToDoService(toDoRepository);
-
-		List<ToDo> result = toDoService.findAll();
-
-		assertEquals(3, result.size());
-	}
-
-	/* Repository with @Autowired */
-
-//	@Autowired
+//	@MockBean
 //	private ToDoRepository toDoRepository;
 //
 //	@Test
-//	void getAllToDos(){
-//	    ToDo todoSample = new ToDo("Todo Sample 1",true);
-//	    toDoRepository.save(todoSample);
-//	    ToDoService toDoService = new ToDoService(toDoRepository);
+//	void getAllToDos() {
+//		List<ToDo> toDoList = new ArrayList<ToDo>();
+//		toDoList.add(new ToDo(1L, "Todo Sample 1", true));
+//		toDoList.add(new ToDo(2L, "Todo Sample 2", true));
+//		toDoList.add(new ToDo(3L, "Todo Sample 3", false));
+//		when(toDoRepository.findAll()).thenReturn(toDoList);
+//		ToDoService toDoService = new ToDoService(toDoRepository);
 //
-//	    List<ToDo> toDoList = toDoService.findAll();
-//	    ToDo lastToDo = toDoList.get(toDoList.size()-1);
+//		List<ToDo> result = toDoService.findAll();
 //
-//	    assertEquals(todoSample.getText(), lastToDo.getText());
-//	    assertEquals(todoSample.isCompleted(), lastToDo.isCompleted());
-//	    assertEquals(todoSample.getId(), lastToDo.getId());
+//		assertEquals(3, result.size());
 //	}
-//
+
+	/* Repository with @Autowired */
+
+	@Autowired
+	private ToDoRepository toDoRepository;
+
+	@AfterEach
+	void tearDown() {
+		toDoRepository.deleteAll();
+	}
+
+	@Test
+	void getAllToDos() {
+		ToDo todoSample = new ToDo("Todo Sample 1", true);
+		toDoRepository.save(todoSample);
+		ToDoService toDoService = new ToDoService(toDoRepository);
+
+		List<ToDo> toDoList = toDoService.findAll();
+		ToDo lastToDo = toDoList.get(toDoList.size() - 1);
+
+		assertEquals(todoSample.getText(), lastToDo.getText());
+		assertEquals(todoSample.isCompleted(), lastToDo.isCompleted());
+		assertEquals(todoSample.getId(), lastToDo.getId());
+	}
+
 //	@Test
-//	void getAllToDos(){
-//	    ToDo todoSample = new ToDo("Todo Sample 1",true);
-//	    toDoRepository.save(todoSample);
-//	    ToDoService toDoService = new ToDoService(toDoRepository);
+//	void getAllToDos() {
+//		ToDo todoSample = new ToDo("Todo Sample 1", true);
+//		toDoRepository.save(todoSample);
+//		ToDoService toDoService = new ToDoService(toDoRepository);
 //
-//	    ToDo firstResult = toDoService.findAll().get(0);
+//		ToDo firstResult = toDoService.findAll().get(0);
 //
-//	    assertEquals(todoSample.getText(), firstResult.getText());
-//	    assertEquals(todoSample.isCompleted(), firstResult.isCompleted());
-//	    assertEquals(todoSample.getId(), firstResult.getId());
+//		assertEquals(todoSample.getText(), firstResult.getText());
+//		assertEquals(todoSample.isCompleted(), firstResult.isCompleted());
+//		assertEquals(todoSample.getId(), firstResult.getId());
 //	}
+
+	@Test
+	void saveAToDo() {
+		ToDoService toDoService = new ToDoService(toDoRepository);
+		ToDo todoSample = new ToDo("Todo Sample 1", true);
+
+		toDoService.save(todoSample);
+
+		assertEquals(1.0, toDoRepository.count());
+	}
 
 }
